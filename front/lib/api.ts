@@ -226,3 +226,43 @@ export const configApi = {
   get: () => api.get<PlatformConfig>("/config"),
   update: (body: Partial<PlatformConfig>) => api.patch<PlatformConfig>("/config", body),
 }
+
+export interface PlatformAnnouncement {
+  id: string
+  title: string
+  message: string
+  type: "news" | "maintenance"
+  severity: "info" | "warning" | "critical"
+  targetOrgIds: string[] | null
+  targetOrgNames?: string[] | null
+  audience: "all" | "selected"
+  startsAt: string
+  endsAt: string | null
+  isActive: boolean
+  createdBy: string | null
+  createdAt: string
+  updatedAt?: string
+}
+
+export const announcementsApi = {
+  list: (params?: { type?: string; isActive?: boolean }) => {
+    const qs = new URLSearchParams()
+    if (params?.type) qs.set("type", params.type)
+    if (params?.isActive != null) qs.set("isActive", String(params.isActive))
+    const q = qs.toString()
+    return api.get<PlatformAnnouncement[]>(`/announcements${q ? `?${q}` : ""}`)
+  },
+  create: (body: {
+    title: string
+    message: string
+    type?: PlatformAnnouncement["type"]
+    severity?: PlatformAnnouncement["severity"]
+    targetOrgIds?: string[] | null
+    startsAt?: string
+    endsAt?: string | null
+    isActive?: boolean
+  }) => api.post<PlatformAnnouncement>("/announcements", body),
+  update: (id: string, body: Partial<PlatformAnnouncement>) =>
+    api.patch<PlatformAnnouncement>(`/announcements/${id}`, body),
+  delete: (id: string) => api.delete<{ ok: boolean }>(`/announcements/${id}`),
+}

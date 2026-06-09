@@ -9,6 +9,7 @@ import {
   ScrollText,
   Settings,
   LayoutDashboard,
+  Megaphone,
 } from "lucide-react"
 import { useAuth, isPlatformStaff } from "@/lib/auth-context"
 import { AdminShell, type NavSection } from "@/components/admin-shell"
@@ -18,6 +19,7 @@ import UsersSection from "@/components/sections/users-section"
 import BillingSection from "@/components/sections/billing-section"
 import LogsSection from "@/components/sections/logs-section"
 import ConfigSection from "@/components/sections/config-section"
+import AnnouncementsSection from "@/components/sections/announcements-section"
 
 const SECTIONS: Record<string, { title: string; subtitle: string }> = {
   dashboard: { title: "Overview", subtitle: "Platform metrics and recent activity" },
@@ -26,6 +28,10 @@ const SECTIONS: Record<string, { title: string; subtitle: string }> = {
   billing: { title: "Billing", subtitle: "Subscriptions, payments, trials" },
   logs: { title: "Logs & audit", subtitle: "Activity trail and error logs" },
   config: { title: "Configuration", subtitle: "Default limits and feature flags" },
+  announcements: {
+    title: "Announcements",
+    subtitle: "News and maintenance notices to organizations",
+  },
 }
 
 const NAV: NavSection[] = [
@@ -42,6 +48,7 @@ const NAV: NavSection[] = [
   {
     label: "Platform",
     items: [
+      { id: "announcements", label: "Announcements", icon: Megaphone },
       { id: "billing", label: "Billing", icon: CreditCard },
       { id: "logs", label: "Logs", icon: ScrollText },
       { id: "config", label: "Configuration", icon: Settings },
@@ -94,6 +101,7 @@ export default function PanelPage() {
       {active === "billing" && <BillingSection />}
       {active === "logs" && <LogsSection />}
       {active === "config" && <ConfigSection />}
+      {active === "announcements" && <AnnouncementsSection />}
     </AdminShell>
   )
 }

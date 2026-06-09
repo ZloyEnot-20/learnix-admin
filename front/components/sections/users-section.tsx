@@ -15,7 +15,13 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Plus, Trash2 } from "lucide-react"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { EllipsisVertical, Plus, Trash2, UserX } from "lucide-react"
 
 const ROLE_LABELS: Record<string, string> = {
   super_admin: "Super Admin",
@@ -178,9 +184,23 @@ export default function UsersSection() {
                     </td>
                     <td className="py-3">
                       {u.role !== "super_admin" && (
-                        <Button variant="ghost" size="icon" onClick={() => remove(u)}>
-                          <Trash2 className="h-4 w-4 text-red-600" />
-                        </Button>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon" title="Actions">
+                              <EllipsisVertical className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={() => toggleActive(u)}>
+                              <UserX className="h-4 w-4" />
+                              {u.isActive ? "Disable user" : "Enable user"}
+                            </DropdownMenuItem>
+                            <DropdownMenuItem variant="destructive" onClick={() => remove(u)}>
+                              <Trash2 className="h-4 w-4" />
+                              Delete
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       )}
                     </td>
                   </tr>

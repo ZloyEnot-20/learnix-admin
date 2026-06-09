@@ -134,3 +134,32 @@ export const errorLogQuerySchema = z.object({
     orgId: z.string().optional(),
   }),
 })
+
+export const createAnnouncementSchema = z.object({
+  body: z.object({
+    title: z.string().min(1).max(200),
+    message: z.string().min(1).max(5000),
+    type: z.enum(["news", "maintenance"]).optional(),
+    severity: z.enum(["info", "warning", "critical"]).optional(),
+    targetOrgIds: z.array(z.string().min(1)).nullable().optional(),
+    startsAt: z.string().datetime().optional(),
+    endsAt: z.string().datetime().nullable().optional(),
+    isActive: z.boolean().optional(),
+  }),
+})
+
+export const updateAnnouncementSchema = z.object({
+  params: z.object({ id: z.string().min(1) }),
+  body: z
+    .object({
+      title: z.string().min(1).max(200).optional(),
+      message: z.string().min(1).max(5000).optional(),
+      type: z.enum(["news", "maintenance"]).optional(),
+      severity: z.enum(["info", "warning", "critical"]).optional(),
+      targetOrgIds: z.array(z.string().min(1)).nullable().optional(),
+      startsAt: z.string().datetime().optional(),
+      endsAt: z.string().datetime().nullable().optional(),
+      isActive: z.boolean().optional(),
+    })
+    .refine((b) => Object.keys(b).length > 0, { message: "Empty update" }),
+})

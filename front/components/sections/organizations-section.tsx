@@ -21,11 +21,19 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ConfirmDialog } from "@/components/confirm-dialog"
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import {
   Ban,
   Building2,
   CheckCircle2,
   Copy,
   Eye,
+  EllipsisVertical,
   Pencil,
   Plus,
   RefreshCw,
@@ -569,24 +577,41 @@ export default function OrganizationsSection() {
                         {org.limits.maxStudents} students / {org.limits.maxTeachers} teachers
                       </td>
                       <td className="py-3">
-                        <div className="flex gap-1">
-                          <Button variant="ghost" size="icon" onClick={() => openDetail(org)} title="Details">
-                            <Eye className="h-4 w-4" />
-                          </Button>
-                          <Button variant="ghost" size="icon" onClick={() => openEdit(org)} title="Edit">
-                            <Pencil className="h-4 w-4" />
-                          </Button>
-                          <Button variant="ghost" size="icon" onClick={() => toggleBlock(org)} title="Toggle block">
-                            {org.status === "active" ? (
-                              <Ban className="h-4 w-4 text-amber-600" />
-                            ) : (
-                              <CheckCircle2 className="h-4 w-4 text-emerald-600" />
-                            )}
-                          </Button>
-                          <Button variant="ghost" size="icon" onClick={() => setPendingDelete(org)} title="Delete">
-                            <Trash2 className="h-4 w-4 text-red-600" />
-                          </Button>
-                        </div>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon" title="Actions">
+                              <EllipsisVertical className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={() => openDetail(org)}>
+                              <Eye className="h-4 w-4" />
+                              View details
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => openEdit(org)}>
+                              <Pencil className="h-4 w-4" />
+                              Edit
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => toggleBlock(org)}>
+                              {org.status === "active" ? (
+                                <>
+                                  <Ban className="h-4 w-4 text-amber-600" />
+                                  Block organization
+                                </>
+                              ) : (
+                                <>
+                                  <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+                                  Unblock organization
+                                </>
+                              )}
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem variant="destructive" onClick={() => setPendingDelete(org)}>
+                              <Trash2 className="h-4 w-4" />
+                              Delete
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </td>
                     </tr>
                   ))}

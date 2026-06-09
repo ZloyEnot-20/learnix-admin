@@ -7,6 +7,7 @@ import auditRoutes from "./audit.routes.js"
 import configRoutes from "./config.routes.js"
 import dashboardRoutes from "./dashboard.routes.js"
 import claimRoutes from "./claim.routes.js"
+import announcementRoutes from "./announcement.routes.js"
 
 const router = Router()
 
@@ -20,5 +21,6 @@ router.use("/billing", billingRoutes)
 router.use("/audit", auditRoutes)
 router.use("/config", configRoutes)
 router.use("/claims", claimRoutes)
+router.use("/announcements", announcementRoutes)
 
 export default router
