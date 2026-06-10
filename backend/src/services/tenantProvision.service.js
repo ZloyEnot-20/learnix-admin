@@ -24,7 +24,7 @@ export async function provisionTenantAdmin({ orgId, login, email, name, plainPas
     existing.name = name.trim()
     existing.login = normalizedLogin
     existing.email = normalizedEmail
-    existing.role = "admin"
+    existing.type = "admin"
     existing.passwordHash = passwordHash
     await existing.save()
     return { userId: existing._id, created: false }
@@ -36,7 +36,7 @@ export async function provisionTenantAdmin({ orgId, login, email, name, plainPas
     login: normalizedLogin,
     email: normalizedEmail,
     name: name.trim(),
-    role: "admin",
+    type: "admin",
     passwordHash,
     isPremium: true,
   })

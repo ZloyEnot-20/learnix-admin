@@ -11,6 +11,7 @@ import { purgeTenantData } from "../services/tenantPurge.service.js"
 import { asyncHandler } from "../utils/asyncHandler.js"
 import { ApiError } from "../utils/ApiError.js"
 import { recordAudit } from "../services/audit.service.js"
+import { getTenantUsage } from "../services/tenantStats.service.js"
 
 async function getDefaultLimits(plan) {
   const cfg = (await PlatformConfig.findById("platform")) ?? (await PlatformConfig.create({ _id: "platform" }))
@@ -28,11 +29,17 @@ export const listOrganizations = asyncHandler(async (req, res) => {
 export const getOrganization = asyncHandler(async (req, res) => {
   const org = await Organization.findById(req.params.id)
   if (!org) throw ApiError.notFound("Organization not found")
-  const [userCount, subscription] = await Promise.all([
+  const [platformUserCount, subscription, usage] = await Promise.all([
     PlatformUser.countDocuments({ orgId: org._id }),
     Subscription.findOne({ orgId: org._id }).sort({ createdAt: -1 }),
+    getTenantUsage(org._id),
   ])
-  res.json({ ...org.toJSON(), userCount, subscription: subscription?.toJSON() ?? null })
+  res.json({
+    ...org.toJSON(),
+    userCount: platformUserCount,
+    ...usage,
+    subscription: subscription?.toJSON() ?? null,
+  })
 })
 
 export const createOrganization = asyncHandler(async (req, res) => {

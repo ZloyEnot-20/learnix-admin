@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
+import { ConfigSkeleton } from "@/components/skeletons"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 export default function ConfigSection() {
@@ -30,7 +31,7 @@ export default function ConfigSection() {
     }
   }
 
-  if (!config) return <p className="text-sm text-slate-500">Loading configuration…</p>
+  if (!config) return <ConfigSkeleton />
 
   return (
     <div className="space-y-6 max-w-2xl">

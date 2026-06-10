@@ -15,6 +15,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { TableCardSkeleton, StatCardsSkeleton } from "@/components/skeletons"
 import { Plus } from "lucide-react"
 
 const STATUS_CLS: Record<string, string> = {
@@ -31,18 +32,24 @@ export default function BillingSection() {
   const [orgs, setOrgs] = useState<Organization[]>([])
   const [open, setOpen] = useState(false)
   const [payForm, setPayForm] = useState({ orgId: "", amount: 0, periodLabel: "", status: "paid" as PlatformPayment["status"] })
+  const [loading, setLoading] = useState(true)
 
   const load = useCallback(async () => {
-    const [s, sub, pay, o] = await Promise.all([
-      billingApi.summary(),
-      billingApi.subscriptions(),
-      billingApi.payments(),
-      orgsApi.list(),
-    ])
-    setSummary(s)
-    setSubs(sub)
-    setPayments(pay)
-    setOrgs(o)
+    setLoading(true)
+    try {
+      const [s, sub, pay, o] = await Promise.all([
+        billingApi.summary(),
+        billingApi.subscriptions(),
+        billingApi.payments(),
+        orgsApi.list(),
+      ])
+      setSummary(s)
+      setSubs(sub)
+      setPayments(pay)
+      setOrgs(o)
+    } finally {
+      setLoading(false)
+    }
   }, [])
 
   useEffect(() => {
@@ -59,6 +66,16 @@ export default function BillingSection() {
     await billingApi.createPayment(payForm)
     setOpen(false)
     load()
+  }
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <StatCardsSkeleton count={4} className="sm:grid-cols-4 lg:grid-cols-4" />
+        <TableCardSkeleton rows={5} columns={5} titleWidth="w-32" />
+        <TableCardSkeleton rows={5} columns={5} titleWidth="w-28" />
+      </div>
+    )
   }
 
   return (

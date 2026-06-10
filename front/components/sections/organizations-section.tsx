@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ConfirmDialog } from "@/components/confirm-dialog"
+import { OrgDetailSkeleton, StatCardsSkeleton, TableSkeleton } from "@/components/skeletons"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -32,7 +33,6 @@ import {
   Building2,
   CheckCircle2,
   Copy,
-  Eye,
   EllipsisVertical,
   Pencil,
   Plus,
@@ -64,6 +64,32 @@ const emptyForm = {
 function formatDate(value: string | null) {
   if (!value) return "—"
   return new Date(value).toLocaleDateString()
+}
+
+function usagePercent(current: number, max: number) {
+  if (max <= 0) return 0
+  return Math.min(100, Math.round((current / max) * 100))
+}
+
+function UsageBar({ label, current, max }: { label: string; current: number; max: number }) {
+  const pct = usagePercent(current, max)
+  const atLimit = current >= max
+  return (
+    <div>
+      <div className="mb-1 flex items-center justify-between text-xs">
+        <span className="text-slate-500">{label}</span>
+        <span className={atLimit ? "font-medium text-red-600" : "text-slate-700"}>
+          {current} / {max}
+        </span>
+      </div>
+      <div className="h-2 overflow-hidden rounded-full bg-slate-100">
+        <div
+          className={`h-full rounded-full transition-all ${atLimit ? "bg-red-500" : pct >= 80 ? "bg-amber-500" : "bg-emerald-500"}`}
+          style={{ width: `${pct}%` }}
+        />
+      </div>
+    </div>
+  )
 }
 
 export default function OrganizationsSection() {
@@ -290,6 +316,8 @@ export default function OrganizationsSection() {
 
   return (
     <div className="space-y-4">
+      {loading && !stats && <StatCardsSkeleton count={6} />}
+
       {stats && (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-6">
           {[
@@ -528,7 +556,7 @@ export default function OrganizationsSection() {
         </CardHeader>
         <CardContent>
           {loading ? (
-            <p className="text-sm text-slate-500">Loading…</p>
+            <TableSkeleton rows={8} columns={7} />
           ) : filtered.length === 0 ? (
             <p className="text-sm text-slate-500">No organizations found.</p>
           ) : (
@@ -547,7 +575,11 @@ export default function OrganizationsSection() {
                 </thead>
                 <tbody>
                   {filtered.map((org) => (
-                    <tr key={org.id} className="border-b border-slate-100">
+                    <tr
+                      key={org.id}
+                      className="cursor-pointer border-b border-slate-100 hover:bg-slate-50"
+                      onClick={() => openDetail(org)}
+                    >
                       <td className="py-3 pr-4 font-medium">{org.name}</td>
                       <td className="py-3 pr-4 font-mono text-slate-600">{org.subdomain}.learnix</td>
                       <td className="py-3 pr-4">
@@ -561,7 +593,7 @@ export default function OrganizationsSection() {
                           {org.status}
                         </Badge>
                       </td>
-                      <td className="py-3 pr-4">
+                      <td className="py-3 pr-4" onClick={(e) => e.stopPropagation()}>
                         <Select value={org.plan} onValueChange={(v) => changePlan(org, v as "free" | "pro")}>
                           <SelectTrigger className="h-8 w-28">
                             <SelectValue />
@@ -576,7 +608,7 @@ export default function OrganizationsSection() {
                       <td className="py-3 pr-4 text-slate-600">
                         {org.limits.maxStudents} students / {org.limits.maxTeachers} teachers
                       </td>
-                      <td className="py-3">
+                      <td className="py-3" onClick={(e) => e.stopPropagation()}>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button variant="ghost" size="icon" title="Actions">
@@ -584,10 +616,6 @@ export default function OrganizationsSection() {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => openDetail(org)}>
-                              <Eye className="h-4 w-4" />
-                              View details
-                            </DropdownMenuItem>
                             <DropdownMenuItem onClick={() => openEdit(org)}>
                               <Pencil className="h-4 w-4" />
                               Edit
@@ -623,31 +651,43 @@ export default function OrganizationsSection() {
       </Card>
 
       <Dialog open={detailOpen} onOpenChange={setDetailOpen}>
-        <DialogContent>
+        <DialogContent className="max-h-[90vh] max-w-lg overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{detailOrg?.name ?? "Organization"}</DialogTitle>
-            <DialogDescription>Organization details and subscription</DialogDescription>
+            <DialogDescription>
+              {detailOrg ? `${detailOrg.subdomain}.learnix · ${detailOrg.plan} plan` : "Organization details"}
+            </DialogDescription>
           </DialogHeader>
           {detailLoading ? (
-            <p className="text-sm text-slate-500">Loading…</p>
+            <OrgDetailSkeleton />
           ) : detailOrg ? (
-            <div className="space-y-3 text-sm">
+            <div className="space-y-4 text-sm">
+              <div className="flex flex-wrap gap-2">
+                <Badge
+                  className={
+                    detailOrg.status === "active"
+                      ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+                      : "border-red-200 bg-red-50 text-red-700"
+                  }
+                >
+                  {detailOrg.status}
+                </Badge>
+                <Badge className="border-slate-200 bg-slate-50 capitalize">{detailOrg.plan}</Badge>
+                {detailOrg.subscription && (
+                  <Badge className="border-sky-200 bg-sky-50 capitalize text-sky-700">
+                    {detailOrg.subscription.status}
+                  </Badge>
+                )}
+              </div>
+
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <p className="text-xs text-slate-500">Subdomain</p>
                   <p className="font-mono">{detailOrg.subdomain}.learnix</p>
                 </div>
                 <div>
-                  <p className="text-xs text-slate-500">Status</p>
-                  <p>{detailOrg.status}</p>
-                </div>
-                <div>
-                  <p className="text-xs text-slate-500">Plan</p>
-                  <p>{detailOrg.plan}</p>
-                </div>
-                <div>
-                  <p className="text-xs text-slate-500">Users</p>
-                  <p>{detailOrg.userCount ?? 0}</p>
+                  <p className="text-xs text-slate-500">Organization ID</p>
+                  <p className="truncate font-mono text-xs">{detailOrg.id}</p>
                 </div>
                 <div>
                   <p className="text-xs text-slate-500">Trial ends</p>
@@ -658,17 +698,72 @@ export default function OrganizationsSection() {
                   <p>{formatDate(detailOrg.createdAt)}</p>
                 </div>
               </div>
+
+              <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
+                <p className="mb-3 text-xs font-medium uppercase text-slate-500">Usage & limits</p>
+                <div className="space-y-3">
+                  <UsageBar
+                    label="Students"
+                    current={detailOrg.studentCount ?? 0}
+                    max={detailOrg.limits.maxStudents}
+                  />
+                  <UsageBar
+                    label="Teachers"
+                    current={detailOrg.teacherCount ?? 0}
+                    max={detailOrg.limits.maxTeachers}
+                  />
+                </div>
+                <div className="mt-3 grid grid-cols-3 gap-2 border-t border-slate-200 pt-3 text-center">
+                  <div>
+                    <p className="text-lg font-semibold">{detailOrg.adminCount ?? 0}</p>
+                    <p className="text-xs text-slate-500">Admins</p>
+                  </div>
+                  <div>
+                    <p className="text-lg font-semibold">{detailOrg.totalUsers ?? 0}</p>
+                    <p className="text-xs text-slate-500">Tenant users</p>
+                  </div>
+                  <div>
+                    <p className="text-lg font-semibold">{detailOrg.userCount ?? 0}</p>
+                    <p className="text-xs text-slate-500">Platform owners</p>
+                  </div>
+                </div>
+              </div>
+
               {detailOrg.subscription && (
                 <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
-                  <p className="mb-1 text-xs font-medium uppercase text-slate-500">Subscription</p>
-                  <p>
-                    {detailOrg.subscription.status} · {detailOrg.subscription.plan}
-                  </p>
-                  <p className="text-slate-600">
-                    Period end: {formatDate(detailOrg.subscription.currentPeriodEnd)}
-                  </p>
+                  <p className="mb-2 text-xs font-medium uppercase text-slate-500">Subscription / tariff</p>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <p className="text-xs text-slate-500">Plan</p>
+                      <p className="capitalize">{detailOrg.subscription.plan}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-slate-500">Status</p>
+                      <p className="capitalize">{detailOrg.subscription.status.replace("_", " ")}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-slate-500">Period start</p>
+                      <p>{formatDate(detailOrg.subscription.currentPeriodStart)}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-slate-500">Period end</p>
+                      <p>{formatDate(detailOrg.subscription.currentPeriodEnd)}</p>
+                    </div>
+                  </div>
                 </div>
               )}
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <p className="text-xs text-slate-500">Max students</p>
+                  <p className="font-medium">{detailOrg.limits.maxStudents}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-slate-500">Max teachers</p>
+                  <p className="font-medium">{detailOrg.limits.maxTeachers}</p>
+                </div>
+              </div>
+
               {detailOrg.notes && (
                 <div>
                   <p className="text-xs text-slate-500">Notes</p>

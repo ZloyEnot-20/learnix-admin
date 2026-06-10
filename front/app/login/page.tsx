@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { LoginSkeleton } from "@/components/skeletons"
 import { ApiError } from "@/lib/api-client"
 
 export default function LoginPage() {
@@ -36,11 +37,7 @@ export default function LoginPage() {
   }
 
   if (loading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <p className="text-sm text-slate-500">Loading…</p>
-      </div>
-    )
+    return <LoginSkeleton />
   }
 
   return (

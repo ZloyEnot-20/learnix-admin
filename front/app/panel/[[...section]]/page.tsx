@@ -13,6 +13,7 @@ import {
 } from "lucide-react"
 import { useAuth, isPlatformStaff } from "@/lib/auth-context"
 import { AdminShell, type NavSection } from "@/components/admin-shell"
+import { PanelShellSkeleton } from "@/components/skeletons"
 import DashboardSection from "@/components/sections/dashboard-section"
 import OrganizationsSection from "@/components/sections/organizations-section"
 import UsersSection from "@/components/sections/users-section"
@@ -75,11 +76,7 @@ export default function PanelPage() {
   }, [loading, user, router, logout])
 
   if (loading || !user) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <p className="text-sm text-slate-500">Loading…</p>
-      </div>
-    )
+    return <PanelShellSkeleton />
   }
 
   return (

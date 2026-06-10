@@ -27,6 +27,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { AnnouncementsSkeleton } from "@/components/skeletons"
 import { Plus, Megaphone, Wrench } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -60,14 +61,20 @@ export default function AnnouncementsSection() {
   const [open, setOpen] = useState(false)
   const [form, setForm] = useState(EMPTY_FORM)
   const [saving, setSaving] = useState(false)
+  const [loading, setLoading] = useState(true)
 
   const load = useCallback(async () => {
-    const [list, orgList] = await Promise.all([
-      announcementsApi.list(),
-      orgsApi.list(),
-    ])
-    setItems(list)
-    setOrgs(orgList)
+    setLoading(true)
+    try {
+      const [list, orgList] = await Promise.all([
+        announcementsApi.list(),
+        orgsApi.list(),
+      ])
+      setItems(list)
+      setOrgs(orgList)
+    } finally {
+      setLoading(false)
+    }
   }, [])
 
   useEffect(() => {
@@ -120,6 +127,10 @@ export default function AnnouncementsSection() {
 
   return (
     <div className="space-y-6">
+      {loading ? (
+        <AnnouncementsSkeleton />
+      ) : (
+        <>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <p className="text-sm text-slate-600">
@@ -324,6 +335,8 @@ export default function AnnouncementsSection() {
           )}
         </CardContent>
       </Card>
+        </>
+      )}
     </div>
   )
 }

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { dashboardApi, type DashboardData } from "@/lib/api"
+import { DashboardSkeleton } from "@/components/skeletons"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 export default function DashboardSection() {
@@ -12,7 +13,7 @@ export default function DashboardSection() {
   }, [])
 
   if (!data) {
-    return <p className="text-sm text-slate-500">Loading metrics…</p>
+    return <DashboardSkeleton />
   }
 
   const stats = [

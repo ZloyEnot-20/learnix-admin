@@ -26,6 +26,10 @@ export interface Organization {
   createdAt: string
   updatedAt?: string
   userCount?: number
+  studentCount?: number
+  teacherCount?: number
+  adminCount?: number
+  totalUsers?: number
   subscription?: Subscription | null
 }
 
@@ -61,6 +65,7 @@ export interface Subscription {
   plan: "free" | "pro"
   status: "trialing" | "active" | "past_due" | "canceled"
   trialEndsAt: string | null
+  currentPeriodStart: string | null
   currentPeriodEnd: string | null
 }
 

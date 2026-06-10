@@ -21,6 +21,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { TableCardSkeleton, TableSkeleton } from "@/components/skeletons"
 import { EllipsisVertical, Plus, Trash2, UserX } from "lucide-react"
 
 const ROLE_LABELS: Record<string, string> = {
@@ -33,6 +34,7 @@ const ROLE_LABELS: Record<string, string> = {
 export default function UsersSection() {
   const [users, setUsers] = useState<PlatformUser[]>([])
   const [orgs, setOrgs] = useState<Organization[]>([])
+  const [loading, setLoading] = useState(true)
   const [open, setOpen] = useState(false)
   const [form, setForm] = useState({
     name: "",
@@ -43,9 +45,14 @@ export default function UsersSection() {
   })
 
   const load = useCallback(async () => {
-    const [u, o] = await Promise.all([usersApi.list(), orgsApi.list()])
-    setUsers(u)
-    setOrgs(o)
+    setLoading(true)
+    try {
+      const [u, o] = await Promise.all([usersApi.list(), orgsApi.list()])
+      setUsers(u)
+      setOrgs(o)
+    } finally {
+      setLoading(false)
+    }
   }, [])
 
   useEffect(() => {
@@ -156,6 +163,9 @@ export default function UsersSection() {
           <CardTitle>Users</CardTitle>
         </CardHeader>
         <CardContent>
+          {loading ? (
+            <TableSkeleton rows={6} columns={6} />
+          ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
@@ -208,6 +218,7 @@ export default function UsersSection() {
               </tbody>
             </table>
           </div>
+          )}
         </CardContent>
       </Card>
     </div>

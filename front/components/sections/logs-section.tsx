@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { auditApi, type AuditLogEntry, type ErrorLogEntry } from "@/lib/api"
+import { ActivityListSkeleton } from "@/components/skeletons"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -40,14 +41,27 @@ export default function LogsSection() {
   const [errors, setErrors] = useState<ErrorLogEntry[]>([])
   const [auditPage, setAuditPage] = useState(1)
   const [auditPages, setAuditPages] = useState(1)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    auditApi.list({ page: auditPage }).then((r) => {
-      setAudit(r.items)
-      setAuditPages(r.pages)
-    })
-    auditApi.errors({ page: 1 }).then((r) => setErrors(r.items))
+    setLoading(true)
+    Promise.all([
+      auditApi.list({ page: auditPage }).then((r) => {
+        setAudit(r.items)
+        setAuditPages(r.pages)
+      }),
+      auditApi.errors({ page: 1 }).then((r) => setErrors(r.items)),
+    ]).finally(() => setLoading(false))
   }, [auditPage])
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <ActivityListSkeleton rows={6} />
+        <ActivityListSkeleton rows={4} />
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-6">
