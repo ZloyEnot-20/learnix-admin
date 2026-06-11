@@ -1,5 +1,5 @@
 const API_URL =
-  process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") ?? "http://localhost:4100/api"
+  process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") ?? "http://learnix-api.tw1.ru/api"
 
 const ACCESS_KEY = "learnix_platform_access"
 const REFRESH_KEY = "learnix_platform_refresh"
