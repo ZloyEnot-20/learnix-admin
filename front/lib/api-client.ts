@@ -1,5 +1,5 @@
 const API_URL =
-  process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") ?? "https://learnix-api.tw1.ru/api"
+  process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") ?? "https://learnix-api.xyz/api"
 
 const ACCESS_KEY = "learnix_platform_access"
 const REFRESH_KEY = "learnix_platform_refresh"

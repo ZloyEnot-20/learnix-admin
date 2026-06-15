@@ -47,6 +47,9 @@ export const refresh = asyncHandler(async (req, res) => {
 
   const user = await PlatformUser.findById(payload.sub)
   if (!user || !user.isActive) throw ApiError.unauthorized("Account no longer exists")
+  if (!["super_admin", "platform_admin"].includes(user.role)) {
+    throw ApiError.forbidden("Platform admin access only")
+  }
 
   res.json({
     accessToken: signAccessToken(user),

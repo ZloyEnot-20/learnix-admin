@@ -4,7 +4,10 @@ import { Organization } from "../models/Organization.js"
 import { Subscription } from "../models/Subscription.js"
 import { PlatformConfig } from "../models/PlatformConfig.js"
 import { hashPassword } from "../utils/password.js"
-import { env } from "../config/env.js"
+import { env, isProd } from "../config/env.js"
+import { assertSeedPassword } from "../utils/seedGuard.js"
+
+assertSeedPassword("SEED_ADMIN_PASSWORD", env.seed.adminPassword)
 
 await PlatformConfig.findByIdAndUpdate(
   "platform",
@@ -26,7 +29,7 @@ if (!existing) {
 }
 
 const demoOrg = await Organization.findOne({ subdomain: "demo" })
-if (!demoOrg) {
+if (!demoOrg && !isProd) {
   const org = await Organization.create({
     name: "Demo Learning Center",
     subdomain: "demo",
@@ -46,7 +49,7 @@ if (!demoOrg) {
     email: "demo_owner@demo.learnix",
     login: "demo_owner",
     name: "Demo Owner",
-    passwordHash: await hashPassword("demo123"),
+    passwordHash: await hashPassword(env.seed.demoOwnerPassword),
     role: "owner",
     orgId: org._id,
   })

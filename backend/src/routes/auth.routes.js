@@ -8,7 +8,7 @@ import * as ctrl from "../controllers/auth.controller.js"
 const router = Router()
 
 router.post("/login", authLimiter, validate(loginSchema), ctrl.login)
-router.post("/refresh", validate(refreshSchema), ctrl.refresh)
+router.post("/refresh", authLimiter, validate(refreshSchema), ctrl.refresh)
 router.get("/me", authenticate, isPlatformStaff, ctrl.me)
 
 export default router
