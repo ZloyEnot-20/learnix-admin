@@ -126,6 +126,17 @@ export interface DashboardData {
   }>
 }
 
+export interface PlatformAnalyticsData {
+  totalHomeworkCompletions: number
+  uniqueStudents: number
+  homeworkByDay: Array<{ date: string; count: number }>
+  activeStudentsByDay: Array<{ date: string; count: number }>
+  newStudentsByDay: Array<{ date: string; count: number }>
+  from: string
+  to: string
+  days: number
+}
+
 export const authApi = {
   login: (email: string, password: string) =>
     api.post<{ accessToken: string; refreshToken: string; user: PlatformUser }>("/auth/login", {
@@ -135,8 +146,21 @@ export const authApi = {
   me: () => api.get<PlatformUser>("/auth/me"),
 }
 
+export const registerApi = {
+  createOrganization: (body: {
+    name: string
+    subdomain: string
+    ownerName: string
+    ownerLogin: string
+  }) => api.post<CreateOrganizationResult>("/register", body, false),
+}
+
 export const dashboardApi = {
   get: () => api.get<DashboardData>("/dashboard"),
+}
+
+export const analyticsApi = {
+  platform: (days = 60) => api.get<PlatformAnalyticsData>(`/analytics/platform?days=${days}`),
 }
 
 export const orgsApi = {

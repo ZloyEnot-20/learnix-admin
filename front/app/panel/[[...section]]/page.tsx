@@ -23,7 +23,7 @@ import ConfigSection from "@/components/sections/config-section"
 import AnnouncementsSection from "@/components/sections/announcements-section"
 
 const SECTIONS: Record<string, { title: string; subtitle: string }> = {
-  dashboard: { title: "Overview", subtitle: "Platform metrics and recent activity" },
+  dashboard: { title: "Обзор", subtitle: "Аналитика платформы и недавняя активность" },
   organizations: { title: "Organizations", subtitle: "Tenants — create, block, set limits" },
   users: { title: "Platform users", subtitle: "Owners and admins across organizations" },
   billing: { title: "Billing", subtitle: "Subscriptions, payments, trials" },

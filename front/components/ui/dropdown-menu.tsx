@@ -46,7 +46,7 @@ function DropdownMenuItem({
     <DropdownMenuPrimitive.Item
       data-variant={variant}
       className={cn(
-        "relative flex cursor-default select-none items-center gap-2 rounded-lg px-2.5 py-2 text-sm outline-none transition-colors",
+        "relative flex cursor-pointer select-none items-center gap-2 rounded-lg px-2.5 py-2 text-sm outline-none transition-colors",
         "focus:bg-slate-100 data-[variant=destructive]:text-red-600 data-[variant=destructive]:focus:bg-red-50",
         className,
       )}

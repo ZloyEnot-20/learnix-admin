@@ -103,6 +103,39 @@ export function DashboardSkeleton() {
   )
 }
 
+function ChartBlockSkeleton({ tall = false }: { tall?: boolean }) {
+  return (
+    <div className="space-y-2">
+      <Skeleton className="h-3 w-36 bg-zinc-800" />
+      <Skeleton className={cn("w-full rounded-lg bg-zinc-800/80", tall ? "h-[300px]" : "h-[240px]")} />
+    </div>
+  )
+}
+
+export function AnalyticsDashboardSkeleton() {
+  return (
+    <div className="space-y-6">
+      <section className="overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-950 p-5 sm:p-6">
+        <div className="mb-6 grid gap-4 sm:grid-cols-2">
+          {Array.from({ length: 2 }).map((_, i) => (
+            <div key={i} className="rounded-xl border border-zinc-800/80 bg-zinc-900/50 px-5 py-6">
+              <Skeleton className="h-12 w-40 bg-zinc-800" />
+              <Skeleton className="mt-3 h-3 w-32 bg-zinc-800" />
+            </div>
+          ))}
+        </div>
+        <ChartBlockSkeleton tall />
+        <div className="mt-6 grid gap-6 lg:grid-cols-2">
+          <ChartBlockSkeleton />
+          <ChartBlockSkeleton />
+        </div>
+      </section>
+      <StatCardsSkeleton count={4} className="lg:grid-cols-4 xl:grid-cols-4" />
+      <ActivityListSkeleton />
+    </div>
+  )
+}
+
 export function ConfigSkeleton() {
   return (
     <div className="max-w-2xl space-y-6">
@@ -245,7 +278,7 @@ export function PanelShellSkeleton() {
           <Skeleton className="mt-2 h-4 w-64" />
         </header>
         <main className="flex-1 p-4 lg:p-8">
-          <DashboardSkeleton />
+          <AnalyticsDashboardSkeleton />
         </main>
       </div>
     </div>
@@ -260,6 +293,27 @@ export function LoginSkeleton() {
         <Skeleton className="mt-2 h-4 w-full" />
         <div className="mt-6 space-y-4">
           <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-full" />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export function RegisterSkeleton() {
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-slate-100 p-4">
+      <div className="w-full max-w-md rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+        <Skeleton className="h-6 w-56" />
+        <Skeleton className="mt-2 h-4 w-full" />
+        <div className="mt-6 space-y-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="space-y-2">
+              <Skeleton className="h-4 w-24" />
+              <Skeleton className="h-10 w-full" />
+            </div>
+          ))}
           <Skeleton className="h-10 w-full" />
           <Skeleton className="h-10 w-full" />
         </div>

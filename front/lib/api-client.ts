@@ -1,5 +1,5 @@
 const API_URL =
-  process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") ?? "https://learnix-api.xyz/api"
+  process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") ?? "http://localhost:5000/api"
 
 const ACCESS_KEY = "learnix_platform_access"
 const REFRESH_KEY = "learnix_platform_refresh"
@@ -90,8 +90,10 @@ export async function apiFetch<T = unknown>(
 }
 
 export const api = {
-  get: <T>(path: string) => apiFetch<T>(path),
-  post: <T>(path: string, body?: unknown) => apiFetch<T>(path, { method: "POST", body }),
-  patch: <T>(path: string, body?: unknown) => apiFetch<T>(path, { method: "PATCH", body }),
-  delete: <T>(path: string) => apiFetch<T>(path, { method: "DELETE" }),
+  get: <T>(path: string, auth = true) => apiFetch<T>(path, { auth }),
+  post: <T>(path: string, body?: unknown, auth = true) =>
+    apiFetch<T>(path, { method: "POST", body, auth }),
+  patch: <T>(path: string, body?: unknown, auth = true) =>
+    apiFetch<T>(path, { method: "PATCH", body, auth }),
+  delete: <T>(path: string, auth = true) => apiFetch<T>(path, { method: "DELETE", auth }),
 }

@@ -16,6 +16,10 @@ export function CardTitle({ className, children }: { className?: string; childre
   return <h3 className={cn("text-sm font-semibold text-slate-900", className)}>{children}</h3>
 }
 
+export function CardDescription({ className, children }: { className?: string; children: React.ReactNode }) {
+  return <p className={cn("text-sm text-slate-500", className)}>{children}</p>
+}
+
 export function CardContent({ className, children }: { className?: string; children: React.ReactNode }) {
   return <div className={cn("p-5", className)}>{children}</div>
 }
