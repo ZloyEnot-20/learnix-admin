@@ -21,11 +21,11 @@ interface AnalyticsAreaChartProps {
   color: string
   fillId: string
   height?: number
-  tickInterval?: number
 }
 
 function formatTick(date: string) {
-  return date.slice(5)
+  const [, month, day] = date.split("-")
+  return `${month}/${day}`
 }
 
 function ChartTooltip({
@@ -41,10 +41,10 @@ function ChartTooltip({
 }) {
   if (!active || !payload?.length) return null
   return (
-    <div className="rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-xs shadow-xl">
-      <p className="text-zinc-400">{label}</p>
-      <p className="mt-1 font-semibold tabular-nums" style={{ color }}>
-        {payload[0]?.value?.toLocaleString("ru-RU") ?? 0}
+    <div className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs shadow-md">
+      <p className="text-slate-500">{label}</p>
+      <p className="mt-0.5 font-semibold tabular-nums text-slate-900">
+        <span style={{ color }}>{payload[0]?.value?.toLocaleString("en-US") ?? 0}</span>
       </p>
     </div>
   )
@@ -54,43 +54,44 @@ export function AnalyticsAreaChart({
   data,
   color,
   fillId,
-  height = 280,
-  tickInterval,
+  height = 260,
 }: AnalyticsAreaChartProps) {
   const max = Math.max(...data.map((d) => d.count), 1)
-  const yMax = Math.ceil(max * 1.15) || 1
+  const yMax = Math.ceil(max * 1.12) || 1
 
   return (
-    <div style={{ height }} className="w-full">
+    <div style={{ height }} className="w-full min-w-0">
       <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+        <LineChart data={data} margin={{ top: 12, right: 12, left: 4, bottom: 4 }}>
           <defs>
             <linearGradient id={fillId} x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor={color} stopOpacity={0.35} />
-              <stop offset="100%" stopColor={color} stopOpacity={0.02} />
+              <stop offset="0%" stopColor={color} stopOpacity={0.18} />
+              <stop offset="100%" stopColor={color} stopOpacity={0} />
             </linearGradient>
           </defs>
-          <CartesianGrid stroke="#27272a" strokeDasharray="3 3" vertical={false} />
+          <CartesianGrid stroke="#e2e8f0" strokeDasharray="4 4" vertical={false} />
           <XAxis
             dataKey="date"
-            tick={{ fill: "#71717a", fontSize: 11 }}
+            tick={{ fill: "#94a3b8", fontSize: 11 }}
             tickLine={false}
-            axisLine={{ stroke: "#3f3f46" }}
+            axisLine={{ stroke: "#e2e8f0" }}
             tickFormatter={formatTick}
-            interval={tickInterval ?? "preserveStartEnd"}
-            minTickGap={28}
+            interval="preserveStartEnd"
+            minTickGap={32}
+            dy={6}
           />
           <YAxis
-            tick={{ fill: "#71717a", fontSize: 11 }}
+            tick={{ fill: "#94a3b8", fontSize: 11 }}
             tickLine={false}
             axisLine={false}
-            width={48}
+            width={44}
             domain={[0, yMax]}
             allowDecimals={false}
+            tickFormatter={(v) => (v >= 1000 ? `${Math.round(v / 1000)}k` : String(v))}
           />
           <Tooltip
             content={<ChartTooltip color={color} />}
-            cursor={{ stroke: "#52525b", strokeWidth: 1 }}
+            cursor={{ stroke: "#cbd5e1", strokeWidth: 1, strokeDasharray: "4 4" }}
           />
           <Area
             type="monotone"
@@ -105,7 +106,7 @@ export function AnalyticsAreaChart({
             stroke={color}
             strokeWidth={2}
             dot={false}
-            activeDot={{ r: 4, fill: color, stroke: "#18181b", strokeWidth: 2 }}
+            activeDot={{ r: 4, fill: color, stroke: "#fff", strokeWidth: 2 }}
             isAnimationActive={false}
           />
         </LineChart>

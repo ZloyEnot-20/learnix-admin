@@ -42,6 +42,84 @@ export const getOrganization = asyncHandler(async (req, res) => {
   })
 })
 
+export const registerOrganization = asyncHandler(async (req, res) => {
+  req.body.plan = "free"
+  req.body.ownerName = req.body.ownerName.trim()
+  req.body.ownerLogin = req.body.ownerLogin.trim().toLowerCase()
+
+  const existing = await Organization.findOne({ subdomain: req.body.subdomain.toLowerCase() })
+  if (existing) throw ApiError.conflict("Subdomain already taken")
+
+  const plan = "free"
+  const defaults = await getDefaultLimits(plan)
+  const cfg = await PlatformConfig.findById("platform")
+  const trialDays = cfg?.trialDays ?? 14
+  const trialEndsAt = trialDays > 0 ? new Date(Date.now() + trialDays * 86400000) : null
+
+  const org = await Organization.create({
+    name: req.body.name.trim(),
+    subdomain: req.body.subdomain.toLowerCase(),
+    plan,
+    limits: defaults,
+    trialEndsAt,
+  })
+
+  await Subscription.create({
+    orgId: org._id,
+    plan,
+    status: trialEndsAt ? "trialing" : "active",
+    trialEndsAt,
+    currentPeriodStart: new Date(),
+    currentPeriodEnd: trialEndsAt,
+  })
+
+  const login = normalizeLogin(req.body.ownerLogin)
+  const loginTaken = await PlatformUser.findOne({ login })
+  if (loginTaken) throw ApiError.conflict("Owner login already taken")
+
+  const email = `${login}@${org.subdomain}.learnix`
+  const emailTaken = await PlatformUser.findOne({ email })
+  if (emailTaken) throw ApiError.conflict("Owner email already registered")
+
+  const plainPassword = generatePassword()
+  const owner = await PlatformUser.create({
+    email,
+    login,
+    name: req.body.ownerName,
+    passwordHash: await hashPassword(plainPassword),
+    role: "owner",
+    orgId: org._id,
+  })
+
+  await provisionTenantAdmin({
+    orgId: org._id,
+    login,
+    email,
+    name: owner.name,
+    plainPassword,
+  })
+
+  const claim = await createOwnerClaim(owner._id, org._id, plainPassword)
+  const ownerClaim = {
+    login,
+    code: claim.code,
+    expiresAt: claim.expiresAt,
+  }
+
+  await recordAudit({
+    req,
+    action: "self_register",
+    category: "registration",
+    targetType: "organization",
+    targetId: org._id,
+    targetLabel: org.name,
+    orgId: org._id,
+    details: { subdomain: org.subdomain, plan, ownerId: owner._id },
+  })
+
+  res.status(201).json({ ...org.toJSON(), ownerClaim })
+})
+
 export const createOrganization = asyncHandler(async (req, res) => {
   const existing = await Organization.findOne({ subdomain: req.body.subdomain.toLowerCase() })
   if (existing) throw ApiError.conflict("Subdomain already taken")

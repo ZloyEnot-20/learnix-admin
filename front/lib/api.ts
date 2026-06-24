@@ -135,6 +135,8 @@ export interface PlatformAnalyticsData {
   from: string
   to: string
   days: number
+  orgId: string | null
+  orgName: string | null
 }
 
 export const authApi = {
@@ -160,7 +162,17 @@ export const dashboardApi = {
 }
 
 export const analyticsApi = {
-  platform: (days = 60) => api.get<PlatformAnalyticsData>(`/analytics/platform?days=${days}`),
+  platform: (params?: { days?: number; from?: string; to?: string; orgId?: string | null }) => {
+    const qs = new URLSearchParams()
+    if (params?.from && params?.to) {
+      qs.set("from", params.from)
+      qs.set("to", params.to)
+    } else {
+      qs.set("days", String(params?.days ?? 60))
+    }
+    if (params?.orgId) qs.set("orgId", params.orgId)
+    return api.get<PlatformAnalyticsData>(`/analytics/platform?${qs}`)
+  },
 }
 
 export const orgsApi = {

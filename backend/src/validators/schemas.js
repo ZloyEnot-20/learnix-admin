@@ -15,14 +15,22 @@ export const refreshSchema = z.object({
   body: z.object({ refreshToken: z.string().min(1) }),
 })
 
+const subdomainField = z
+  .string()
+  .min(2)
+  .max(63)
+  .regex(/^[a-z0-9-]+$/, "Subdomain: lowercase letters, numbers, hyphens only")
+
+const ownerLoginField = z
+  .string()
+  .min(2)
+  .max(64)
+  .regex(/^[a-z0-9._-]+$/, "Login: lowercase letters, numbers, dots, underscores, hyphens")
+
 export const createOrgSchema = z.object({
   body: z.object({
     name: z.string().min(1).max(120),
-    subdomain: z
-      .string()
-      .min(2)
-      .max(63)
-      .regex(/^[a-z0-9-]+$/, "Subdomain: lowercase letters, numbers, hyphens only"),
+    subdomain: subdomainField,
     plan: z.enum(["free", "pro"]).optional(),
     trialDays: z.number().int().min(0).max(90).optional(),
     limits: z
@@ -32,12 +40,16 @@ export const createOrgSchema = z.object({
       })
       .optional(),
     ownerName: z.string().min(1).optional(),
-    ownerLogin: z
-      .string()
-      .min(2)
-      .max(64)
-      .regex(/^[a-z0-9._-]+$/, "Login: lowercase letters, numbers, dots, underscores, hyphens")
-      .optional(),
+    ownerLogin: ownerLoginField.optional(),
+  }),
+})
+
+export const registerOrgSchema = z.object({
+  body: z.object({
+    name: z.string().min(1).max(120),
+    subdomain: subdomainField,
+    ownerName: z.string().min(1).max(120),
+    ownerLogin: ownerLoginField,
   }),
 })
 

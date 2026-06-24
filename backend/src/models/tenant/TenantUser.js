@@ -16,6 +16,8 @@ const tenantUserSchema = new Schema(
     },
     passwordHash: { type: String, required: true, select: false },
     isPremium: { type: Boolean, default: false },
+    joinedAt: { type: Date, index: true },
+    deletedAt: { type: Date },
   },
   { timestamps: true, _id: false },
 )

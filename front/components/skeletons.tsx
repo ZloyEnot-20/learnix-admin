@@ -105,31 +105,64 @@ export function DashboardSkeleton() {
 
 function ChartBlockSkeleton({ tall = false }: { tall?: boolean }) {
   return (
-    <div className="space-y-2">
-      <Skeleton className="h-3 w-36 bg-zinc-800" />
-      <Skeleton className={cn("w-full rounded-lg bg-zinc-800/80", tall ? "h-[300px]" : "h-[240px]")} />
-    </div>
+    <Card>
+      <CardHeader className="pb-2">
+        <Skeleton className="h-4 w-40" />
+        <Skeleton className="mt-2 h-3 w-56" />
+      </CardHeader>
+      <CardContent className="pt-2">
+        <Skeleton className={cn("w-full rounded-lg", tall ? "h-[280px]" : "h-[220px]")} />
+      </CardContent>
+    </Card>
+  )
+}
+
+export function AnalyticsChartsSkeleton() {
+  return (
+    <>
+      <div className="grid gap-4 sm:grid-cols-2">
+        {Array.from({ length: 2 }).map((_, i) => (
+          <Card key={i}>
+            <CardContent className="flex items-center gap-4 pt-5">
+              <Skeleton className="h-11 w-11 shrink-0 rounded-xl" />
+              <div className="flex-1 space-y-2">
+                <Skeleton className="h-3 w-28" />
+                <Skeleton className="h-8 w-24" />
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      <ChartBlockSkeleton tall />
+
+      <div className="grid gap-4 lg:grid-cols-2">
+        <ChartBlockSkeleton />
+        <ChartBlockSkeleton />
+      </div>
+    </>
   )
 }
 
 export function AnalyticsDashboardSkeleton() {
   return (
     <div className="space-y-6">
-      <section className="overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-950 p-5 sm:p-6">
-        <div className="mb-6 grid gap-4 sm:grid-cols-2">
-          {Array.from({ length: 2 }).map((_, i) => (
-            <div key={i} className="rounded-xl border border-zinc-800/80 bg-zinc-900/50 px-5 py-6">
-              <Skeleton className="h-12 w-40 bg-zinc-800" />
-              <Skeleton className="mt-3 h-3 w-32 bg-zinc-800" />
-            </div>
-          ))}
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div className="space-y-2">
+          <Skeleton className="h-5 w-44" />
+          <Skeleton className="h-4 w-72" />
         </div>
-        <ChartBlockSkeleton tall />
-        <div className="mt-6 grid gap-6 lg:grid-cols-2">
-          <ChartBlockSkeleton />
-          <ChartBlockSkeleton />
+        <div className="flex gap-2">
+          <Skeleton className="h-9 w-52" />
+          <Skeleton className="h-9 w-[140px]" />
+          <Skeleton className="h-9 w-[140px]" />
+          <Skeleton className="h-9 w-28" />
+          <Skeleton className="h-9 w-9" />
         </div>
-      </section>
+      </div>
+
+      <AnalyticsChartsSkeleton />
+
       <StatCardsSkeleton count={4} className="lg:grid-cols-4 xl:grid-cols-4" />
       <ActivityListSkeleton />
     </div>
