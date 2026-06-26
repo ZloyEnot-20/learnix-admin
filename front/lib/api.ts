@@ -307,3 +307,63 @@ export const announcementsApi = {
     api.patch<PlatformAnnouncement>(`/announcements/${id}`, body),
   delete: (id: string) => api.delete<{ ok: boolean }>(`/announcements/${id}`),
 }
+
+export type IssueReportStatus = "open" | "resolved" | "dismissed"
+
+export type IssueReportExerciseKind = "grammar" | "vocabulary" | "podcast" | "speaking"
+
+export interface IssueReportEntry {
+  id: string
+  orgId: string
+  orgName: string | null
+  studentId: string
+  studentName: string
+  homeworkId: string | null
+  controlWorkId: string | null
+  stepIndex: number | null
+  exerciseSlug: string
+  exerciseTitle: string
+  exerciseKind: IssueReportExerciseKind
+  questionIndex: number | null
+  questionId: number | null
+  questionPrompt: string | null
+  message: string | null
+  status: IssueReportStatus
+  resolvedAt: string | null
+  resolvedById: string | null
+  resolvedByName: string | null
+  createdAt: string
+  updatedAt: string
+}
+
+export interface IssueReportListResponse {
+  items: IssueReportEntry[]
+  total: number
+  openCount: number
+  page: number
+  limit: number
+  pages: number
+}
+
+export const issueReportsApi = {
+  list: (params?: {
+    page?: number
+    limit?: number
+    status?: string
+    exerciseKind?: string
+    orgId?: string
+    search?: string
+  }) => {
+    const qs = new URLSearchParams()
+    if (params?.page) qs.set("page", String(params.page))
+    if (params?.limit) qs.set("limit", String(params.limit))
+    if (params?.status) qs.set("status", params.status)
+    if (params?.exerciseKind) qs.set("exerciseKind", params.exerciseKind)
+    if (params?.orgId) qs.set("orgId", params.orgId)
+    if (params?.search) qs.set("search", params.search)
+    const q = qs.toString()
+    return api.get<IssueReportListResponse>(`/issue-reports${q ? `?${q}` : ""}`)
+  },
+  update: (id: string, status: IssueReportStatus) =>
+    api.patch<IssueReportEntry>(`/issue-reports/${id}`, { status }),
+}

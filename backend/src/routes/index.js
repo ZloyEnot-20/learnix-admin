@@ -13,6 +13,7 @@ import dashboardRoutes from "./dashboard.routes.js"
 import analyticsRoutes from "./analytics.routes.js"
 import claimRoutes from "./claim.routes.js"
 import announcementRoutes from "./announcement.routes.js"
+import issueReportRoutes from "./issueReport.routes.js"
 
 const router = Router()
 
@@ -30,5 +31,6 @@ router.use("/audit", auditRoutes)
 router.use("/config", configRoutes)
 router.use("/claims", claimRoutes)
 router.use("/announcements", announcementRoutes)
+router.use("/issue-reports", issueReportRoutes)
 
 export default router

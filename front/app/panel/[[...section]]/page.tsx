@@ -10,6 +10,7 @@ import {
   Settings,
   LayoutDashboard,
   Megaphone,
+  Flag,
 } from "lucide-react"
 import { useAuth, isPlatformStaff } from "@/lib/auth-context"
 import { AdminShell, type NavSection } from "@/components/admin-shell"
@@ -21,6 +22,7 @@ import BillingSection from "@/components/sections/billing-section"
 import LogsSection from "@/components/sections/logs-section"
 import ConfigSection from "@/components/sections/config-section"
 import AnnouncementsSection from "@/components/sections/announcements-section"
+import IssueReportsSection from "@/components/sections/issue-reports-section"
 
 const SECTIONS: Record<string, { title: string; subtitle: string }> = {
   dashboard: { title: "Overview", subtitle: "Platform metrics and learning analytics" },
@@ -32,6 +34,10 @@ const SECTIONS: Record<string, { title: string; subtitle: string }> = {
   announcements: {
     title: "Announcements",
     subtitle: "News and maintenance notices to organizations",
+  },
+  issues: {
+    title: "Issue reports",
+    subtitle: "Student-reported problems in homework across all organizations",
   },
 }
 
@@ -50,6 +56,7 @@ const NAV: NavSection[] = [
     label: "Platform",
     items: [
       { id: "announcements", label: "Announcements", icon: Megaphone },
+      { id: "issues", label: "Issue reports", icon: Flag },
       { id: "billing", label: "Billing", icon: CreditCard },
       { id: "logs", label: "Logs", icon: ScrollText },
       { id: "config", label: "Configuration", icon: Settings },
@@ -99,6 +106,7 @@ export default function PanelPage() {
       {active === "logs" && <LogsSection />}
       {active === "config" && <ConfigSection />}
       {active === "announcements" && <AnnouncementsSection />}
+      {active === "issues" && <IssueReportsSection />}
     </AdminShell>
   )
 }

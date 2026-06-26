@@ -175,3 +175,10 @@ export const updateAnnouncementSchema = z.object({
     })
     .refine((b) => Object.keys(b).length > 0, { message: "Empty update" }),
 })
+
+export const updateIssueReportSchema = z.object({
+  params: z.object({ id: z.string().min(1) }),
+  body: z.object({
+    status: z.enum(["open", "resolved", "dismissed"]),
+  }),
+})
